@@ -1,0 +1,63 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <OutputType>WinExe</OutputType>
+    <TargetFramework>net10.0-windows10.0.19041.0</TargetFramework>
+    <TargetPlatformMinVersion>10.0.17763.0</TargetPlatformMinVersion>
+    <RootNamespace>PgnSimpleEdit</RootNamespace>
+    <AssemblyName>PgnSimpleEdit</AssemblyName>
+    <AssemblyTitle>PGN Simple Edit</AssemblyTitle>
+    <Product>PGN Simple Edit</Product>
+    <Version>0.1.0</Version>
+    <ApplicationManifest>app.manifest</ApplicationManifest>
+    <ApplicationIcon>Assets\AppIcon.ico</ApplicationIcon>
+    <Platforms>x64</Platforms>
+    <Platform Condition="'$(Platform)' == '' or '$(Platform)' == 'AnyCPU'">x64</Platform>
+    <RuntimeIdentifier>win-x64</RuntimeIdentifier>
+    <UseWinUI>true</UseWinUI>
+    <!-- Unpackaged app that carries the Windows App SDK runtime with it. -->
+    <WindowsPackageType>None</WindowsPackageType>
+    <WindowsAppSDKSelfContained>true</WindowsAppSDKSelfContained>
+    <LangVersion>14</LangVersion>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="CommunityToolkit.Mvvm" Version="8.4.2" />
+    <PackageReference Include="Microsoft.WindowsAppSDK" Version="2.5.1" />
+  </ItemGroup>
+
+  <!-- Native core: built by build-core.ps1 (Cargo) and copied next to the exe. -->
+  <PropertyGroup>
+    <RepoRoot>$([MSBuild]::NormalizeDirectory('$(MSBuildProjectDirectory)', '..', '..'))</RepoRoot>
+    <NativeCoreDll>$(RepoRoot)artifacts\core\titania_core.dll</NativeCoreDll>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <NativeCoreSource Include="$(RepoRoot)core\Cargo.toml;$(RepoRoot)core\Cargo.lock;$(RepoRoot)core\*\Cargo.toml;$(RepoRoot)core\*\src\**\*.rs" />
+    <None Include="$(NativeCoreDll)" Link="titania_core.dll" CopyToOutputDirectory="PreserveNewest" Visible="false" />
+  </ItemGroup>
+
+  <!-- The window icon is loaded from disk at start-up. -->
+  <ItemGroup>
+    <Content Remove="Assets\AppIcon.ico" />
+    <None Remove="Assets\AppIcon.ico" />
+    <None Include="Assets\AppIcon.ico" CopyToOutputDirectory="PreserveNewest" />
+  </ItemGroup>
+
+  <!-- dotnet publish leaves out the app's own resource index and compiled XAML for unpackaged
+       WinUI apps, and the app cannot start without them. Copy them from the build output. -->
+  <Target Name="CopyXamlResourcesToPublish" AfterTargets="Publish">
+    <ItemGroup>
+      <XamlResourceFile Include="$(OutDir)$(AssemblyName).pri;$(OutDir)**\*.xbf" />
+    </ItemGroup>
+    <Copy SourceFiles="@(XamlResourceFile)" DestinationFiles="@(XamlResourceFile->'$(PublishDir)%(RecursiveDir)%(Filename)%(Extension)')" SkipUnchangedFiles="true" />
+  </Target>
+
+  <Target Name="BuildNativeCore" BeforeTargets="BeforeBuild" Inputs="@(NativeCoreSource)" Outputs="$(NativeCoreDll)">
+    <Exec Command="pwsh -NoProfile -ExecutionPolicy Bypass -File &quot;$(RepoRoot)build-core.ps1&quot;" />
+  </Target>
+
+</Project>

@@ -1,0 +1,14 @@
+[package]
+name = "titania-pgn"
+description = "PGN file tools for the Titania suite: report, join, merge, split and sort."
+version.workspace = true
+edition.workspace = true
+authors.workspace = true
+
+[dependencies]
+memchr.workspace = true
+memmap2.workspace = true
+rustc-hash.workspace = true
+serde.workspace = true
+serde_json.workspace = true
+xxhash-rust.workspace = true

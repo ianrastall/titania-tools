@@ -1,0 +1,14 @@
+[package]
+name = "titania-ffi"
+description = "C ABI for the Titania core. Builds titania_core.dll; see include/titania_core.h."
+version.workspace = true
+edition.workspace = true
+authors.workspace = true
+
+[lib]
+name = "titania_core"
+crate-type = ["cdylib"]
+
+[dependencies]
+titania-pgn = { path = "../titania-pgn" }
+serde_json.workspace = true
