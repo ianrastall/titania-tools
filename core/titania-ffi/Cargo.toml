@@ -4,6 +4,7 @@ description = "C ABI for the Titania core. Builds titania_core.dll; see include/
 version.workspace = true
 edition.workspace = true
 authors.workspace = true
+license.workspace = true
 
 [lib]
 name = "titania_core"

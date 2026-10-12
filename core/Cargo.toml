@@ -6,6 +6,7 @@ members = ["titania-pgn", "titania-ffi"]
 version = "0.1.0"
 edition = "2024"
 authors = ["Ian Rastall"]
+license = "MIT"
 
 [workspace.dependencies]
 memchr = "2"

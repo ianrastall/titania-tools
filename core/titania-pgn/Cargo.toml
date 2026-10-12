@@ -4,6 +4,7 @@ description = "PGN file tools for the Titania suite: report, join, merge, split 
 version.workspace = true
 edition.workspace = true
 authors.workspace = true
+license.workspace = true
 
 [dependencies]
 memchr.workspace = true
